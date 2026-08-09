@@ -207,6 +207,8 @@ run_e2e_tests:
   image: mcr.microsoft.com/playwright:v1.49.1-noble
   before_script:
     - echo "Preparing Playwright environment..."
+    # Create directories for Playwright reports and test results to avoid errors if they don't exist
+    - mkdir -p playwright-report test-results
     - npm ci
   script:
     - |
@@ -249,7 +251,6 @@ run_e2e_tests:
     - |
       ARGS="--reporter=list"
 
-      # Determine default tag logic if RUN_TESTS_WHEN is after_deploy
       SELECTED_SUITE="$E2E_TEST_SUITE"
 
       # If no suite is specified and RUN_TESTS_WHEN is after_deploy, default to health-check
@@ -285,13 +286,18 @@ run_e2e_tests:
       fi
 
       echo "Executing command: npx playwright test $ARGS"
+
       npx playwright test $ARGS
-  after_script:
-    - |
+      TEST_EXIT_CODE=$?
+
+      # If SAVE_ARTEFACTS is not 'yes', clean up the actual artifacts to save space
       if [ "$SAVE_ARTEFACTS" != "yes" ]; then
-        echo "SAVE_ARTEFACTS not set to 'yes', removing playwright-report and test-results folders..."
-        rm -rf playwright-report test-results
+        echo "SAVE_ARTEFACTS is not 'yes'. Cleaning up actual artifacts..."
+        rm -rf playwright-report/* test-results/*
       fi
+
+      exit $TEST_EXIT_CODE
+
   artifacts:
     when: always
     paths:
