@@ -1,0 +1,328 @@
+stages:
+  - build
+  - push
+  - release
+  - test
+  - cleanup
+
+variables:
+  ENV:
+    value: "-none-"
+    options: [
+      "-none-",
+      "dev-eshop",
+      "dev1-eshop",
+      "dev2-eshop",
+      "dev3-eshop",
+      "test-eshop",
+      "test2-eshop",
+      "uat-eshop",
+      "prod-eshop",
+      "dev-pigu",
+      "test-pigu",
+      "prod-pigu"
+    ]
+    description: "The deployment env"
+  E2E_TEST_SUITE:
+    value: ""
+    description: "Playwright E2E test tag (e.g. 'health-check', 'smoke', 'checkout', 'all'). Leave empty for none."
+  PLAYWRIGHT_FILE:
+    value: ""
+    description: "Test file name relative to e2e folder (e.g. 'checkout.spec.ts'). If empty, all tests will be run."
+  RUN_TESTS_WHEN:
+    value: "never"
+    options:
+      - "never"
+      - "after_deploy"
+    description: "When run tests: never or after_deploy"
+  SAVE_ARTEFACTS:
+    value: "no"
+    options:
+      - "no"
+      - "yes"
+    description: "Save reports and screenshots? If yes, they will be available in the job artifacts for 7 days."
+
+.env_data: &env_data
+  environment:
+    name: $ENV
+    url: $ENV_URL
+
+before_script:
+  - export MODULES_VERSION=$(jq -r '.version' package.json)
+  - export REPO_PROJECT=tele2.lt
+  - export IMAGE_NAME=react
+  - export IMAGE_NAME_MODULES=modules
+  - export IMAGE_TAG_NAME="${IMAGE_NAME}_${ENV}_${CI_COMMIT_TAG:-$CI_COMMIT_REF_SLUG}_${CI_COMMIT_SHORT_SHA}"
+  - export ENV_SCOPE="${ENV%%-*}"
+  - |
+    case "$ENV" in
+      *-eshop)
+        export APPLICATION_NAME="tele2_lt"
+        DOMAIN="tele2.lt"
+        if [ "$ENV_SCOPE" = 'prod' ]; then
+          ENV_PREFIX=""
+        else
+          ENV_PREFIX="${ENV_SCOPE}."
+        fi
+        ;;
+      *-pigu)
+        export APPLICATION_NAME="pigu_int_tele2_com"
+        DOMAIN="pigu.int.tele2.com"
+        if [ "$ENV_SCOPE" = 'prod' ]; then
+          ENV_PREFIX=""
+        else
+          ENV_PREFIX="${ENV_SCOPE}"
+        fi
+        ;;
+    esac
+    export ENV_URL="https://${ENV_PREFIX}${DOMAIN}"
+  - |
+    echo "${username}:xxxxx"
+    STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u "${username}:${password}" \
+      https://${container_image_registry}/api/v2.0/projects/${REPO_PROJECT}/repositories/modules/artifacts/${MODULES_VERSION})
+    export MODULE_EXIST=false
+    echo $STATUS_CODE
+    if [ "$STATUS_CODE" -eq 200 ]; then
+      export MODULE_EXIST=true
+    fi
+
+#
+# Gitlab-runner selector
+#
+.runner_tags: &runner_tags
+  tags:
+    - image-builder
+
+#
+# Create/prepare the React app's node_modules folder for the next compilation
+#
+image_builder:
+  stage: build
+  script:
+    - touch need_clean
+    - |
+      if [ "$MODULE_EXIST" = "true" ]; then
+        echo "Module image exists"
+      else
+        echo "Module image does not exist — building..."
+        podman build --target deps -t ${IMAGE_NAME_MODULES} .
+        echo "true" > need_clean
+      fi
+  only:
+    variables:
+      - $ENV == "-none-"
+  artifacts:
+    paths:
+      - need_clean
+  <<: *runner_tags
+
+#
+# Build a React app for the specified environment
+#
+app_builder:
+  stage: build
+  script:
+    - |
+      if [ "$MODULE_EXIST" = "true" ]; then
+        echo "Module image exists — pulling image."
+        podman login -u ${username} -p ${password} ${container_image_registry}
+        podman pull ${container_image_registry}/${REPO_PROJECT}/modules:${MODULES_VERSION}
+        podman tag ${container_image_registry}/${REPO_PROJECT}/modules:${MODULES_VERSION} localhost/${IMAGE_NAME_MODULES}
+      else
+        echo "Module image already built"
+      fi
+    - echo "! Selected ENVIRONMENT is ${ENV}"
+    - podman build --target application -t "${REPO_PROJECT}_${IMAGE_NAME}" --build-arg env=${ENV} .
+    - echo "true" > need_clean
+  except:
+    variables:
+      - $ENV == "-none-"
+  artifacts:
+    paths:
+      - need_clean
+  <<: *runner_tags
+
+#
+# Upload to the node_modules folder of the React application's prepared image repository
+#
+image_publish:
+  stage: push
+  script:
+    - |
+      if [ "$MODULE_EXIST" = "false" ]; then
+        podman login -u ${username} -p ${password} ${container_image_registry}
+        podman tag localhost/${IMAGE_NAME_MODULES} ${container_image_registry}/${REPO_PROJECT}/${IMAGE_NAME_MODULES}:${MODULES_VERSION}
+        podman tag localhost/${IMAGE_NAME_MODULES} ${container_image_registry}/${REPO_PROJECT}/${IMAGE_NAME_MODULES}:latest
+        podman push localhost/${IMAGE_NAME_MODULES} ${container_image_registry}/${REPO_PROJECT}/${IMAGE_NAME_MODULES}:${MODULES_VERSION}
+        podman push localhost/${IMAGE_NAME_MODULES} ${container_image_registry}/${REPO_PROJECT}/${IMAGE_NAME_MODULES}:latest
+      fi
+  only:
+    variables:
+      - $ENV == "-none-"
+  <<: *runner_tags
+
+#
+# Push Built React Application into Image repository
+#
+app_publish:
+  stage: push
+  script:
+    - podman login -u ${username} -p ${password} ${container_image_registry}
+    - podman tag localhost/${REPO_PROJECT}_${IMAGE_NAME} ${container_image_registry}/${REPO_PROJECT}/${IMAGE_NAME}:${IMAGE_TAG_NAME}
+    - podman tag localhost/${REPO_PROJECT}_${IMAGE_NAME} ${container_image_registry}/${REPO_PROJECT}/${IMAGE_NAME}:${ENV}_latest
+    - podman push localhost/${REPO_PROJECT}_${IMAGE_NAME} ${container_image_registry}/${REPO_PROJECT}/${IMAGE_NAME}:${IMAGE_TAG_NAME}
+    - podman push localhost/${REPO_PROJECT}_${IMAGE_NAME} ${container_image_registry}/${REPO_PROJECT}/${IMAGE_NAME}:${ENV}_latest
+  except:
+    variables:
+      - $ENV == "-none-"
+  <<: *runner_tags
+
+#
+# This Trigger updates k8sConfigs repository to trigger FluxCD rebuild deployments
+#
+trigger_k8sconfigs:
+  stage: release
+  script:
+    - |
+      curl --request POST \
+        --form token=$K8S_PIPELINE_TRIGGER_TOKEN \
+        --form ref=Tanzu \
+        --form "variables[ENVIRONMENT]=$ENV_SCOPE" \
+        --form "variables[APPLICATION_NAME]=$APPLICATION_NAME" \
+        --form "variables[IMAGE_NAME]=$container_image_registry/${REPO_PROJECT}/${IMAGE_NAME}" \
+        --form "variables[NEW_TAG]=$IMAGE_TAG_NAME" \
+        https://git.gitlab.tanzu.bitc.int.tele2.com/api/v4/projects/54/trigger/pipeline
+  except:
+    variables:
+      - $ENV == "-none-"
+  allow_failure: true
+  <<: *env_data
+  <<: *runner_tags
+
+#
+# Playwright end-to-end tests after deployment
+#
+run_e2e_tests:
+  stage: test
+  image: mcr.microsoft.com/playwright:v1.49.1-noble
+  before_script:
+    - echo "Preparing Playwright environment..."
+    - npm ci
+  script:
+    - |
+      echo "========================================================="
+      echo "              E2E TEST RUN INSTRUCTION & INFO            "
+      echo "========================================================="
+      echo "Target URL: $ENV_URL"
+      echo ""
+      echo "USAGE INSTRUCTIONS:"
+      echo " - E2E_TEST_SUITE options:"
+      echo "     * health-check : Quick sanity tests to verify core deployment functionality"
+      echo "     * smoke        : Essential workflow tests (critical user journeys)"
+      echo "     * regression   : Complete test suite covering all features and edge cases"
+      echo "     * all          : Forces execution of all tests in the e2e folder without filtering"
+      echo "     * Custom tag   : Enter any @tag (e.g., @checkout, @cart) to run matching tests"
+      echo " - PLAYWRIGHT_FILE:"
+      echo "     * Specify a file name (e.g., 'checkout.spec.ts'). Path 'e2e/' is prepended automatically."
+      echo "========================================================="
+      echo ""
+      echo "Available test files in 'e2e/' folder:"
+      if [ -d "e2e" ]; then
+        find e2e -type f \( -name "*.spec.ts" -o -name "*.spec.js" -o -name "*.test.ts" -o -name "*.test.js" \)
+      else
+        echo " (e2e folder not found)"
+      fi
+      echo ""
+      echo "Detected @tags in 'e2e/' test files:"
+      if [ -d "e2e" ]; then
+        TAGS=$(grep -oE "@[a-zA-Z0-9_-]+" -r e2e/ 2>/dev/null | cut -d: -f2 | sort -u | tr '\n' ' ')
+        if [ -n "$TAGS" ]; then
+          echo " $TAGS"
+        else
+          echo " (No @tags found in e2e files)"
+        fi
+      fi
+      echo "========================================================="
+    - echo "Waiting for k8s to apply updates to environment $ENV_URL..."
+    - sleep 30
+    - export BASE_URL=$ENV_URL
+    - |
+      ARGS="--reporter=list"
+
+      # Determine default tag logic if RUN_TESTS_WHEN is after_deploy
+      SELECTED_SUITE="$E2E_TEST_SUITE"
+
+      # If no suite is specified and RUN_TESTS_WHEN is after_deploy, default to health-check
+      if [ "$RUN_TESTS_WHEN" = "after_deploy" ] && { [ "$SELECTED_SUITE" = "-none-" ] || [ -z "$SELECTED_SUITE" ]; }; then
+        echo "Defaulting E2E_TEST_SUITE to '@health-check' for after_deploy mode."
+        SELECTED_SUITE="health-check"
+      fi
+
+      # Handle 'all' suite logic: clear specific file targets and ignore tag filters
+      if [ "$SELECTED_SUITE" = "all" ]; then
+        echo "Selected suite is 'all': Running all tests in 'e2e/' directory."
+        ARGS="$ARGS e2e/"
+      else
+        # Append specific test file path if provided
+        if [ -n "$PLAYWRIGHT_FILE" ]; then
+          if [[ "$PLAYWRIGHT_FILE" == e2e/* ]]; then
+            TARGET_FILE="$PLAYWRIGHT_FILE"
+          else
+            TARGET_FILE="e2e/$PLAYWRIGHT_FILE"
+          fi
+          ARGS="$ARGS $TARGET_FILE"
+        fi
+
+        # Apply tag filtering if suite is specified and not -none-
+        if [ "$SELECTED_SUITE" != "-none-" ] && [ -n "$SELECTED_SUITE" ]; then
+          if [[ "$SELECTED_SUITE" != @* ]]; then
+            TAG="@$SELECTED_SUITE"
+          else
+            TAG="$SELECTED_SUITE"
+          fi
+          ARGS="$ARGS --grep $TAG"
+        fi
+      fi
+
+      echo "Executing command: npx playwright test $ARGS"
+      npx playwright test $ARGS
+  after_script:
+    - |
+      if [ "$SAVE_ARTEFACTS" != "yes" ]; then
+        echo "SAVE_ARTEFACTS not set to 'yes', removing playwright-report and test-results folders..."
+        rm -rf playwright-report test-results
+      fi
+  artifacts:
+    when: always
+    paths:
+      - playwright-report/
+      - test-results/
+    expire_in: 7 days
+  except:
+    variables:
+      - $RUN_TESTS_WHEN == "never"
+      - $ENV == "-none-"
+  <<: *runner_tags
+
+#
+# Clean up unnecessary images
+#
+cleanup_podman:
+  stage: cleanup
+  script:
+    - |
+      if [ "$(cat need_clean)" = "true" ]; then
+        podman stop -a
+        podman rm -a
+        podman rmi -a
+        rm -f need_clean
+      fi
+  dependencies:
+    - image_builder
+    - app_builder
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - need_clean
+  allow_failure: true
+  <<: *runner_tags

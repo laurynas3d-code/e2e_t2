@@ -1,13 +1,17 @@
 import { Page } from '@playwright/test'
 
 export const dismissCookieBanner = async (page: Page) => {
-  const cookieBanner = page.getByRole('button', { name: 'Sutinku su visais' }).first()
+  const cookieBanner = page.getByRole('button', {
+    name: 'Sutinku su visais',
+  }).first()
 
+  // Give the banner a very short opportunity to appear
+  // If it is not present, continue immediately.
   try {
-    await cookieBanner.waitFor({ state: 'visible', timeout: 5000 })
-    await cookieBanner.click()
-    await cookieBanner.waitFor({ state: 'hidden', timeout: 2000 })
+    if (await cookieBanner.isVisible({ timeout: 300 })) {
+      await cookieBanner.click()
+    }
   } catch {
-    // Banner not present or already dismissed, continue
+    // Cookie banner is not appears
   }
 }

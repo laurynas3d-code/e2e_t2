@@ -1,20 +1,38 @@
 import { test, expect } from '@playwright/test'
+import { dismissCookieBanner } from './helpers/layout'
 
-test('homepage loads correctly with key elements', async ({ page }) => {
-  const response = await page.goto('/privatiems')
+test('@homepage loads correctly with key elements', async ({ page }) => {
+  const response = await page.goto('/privatiems', {
+    waitUntil: 'domcontentloaded',
+  })
+
   expect(response?.status()).toBe(200)
 
-  // 1. Check for Header elements
-  await expect(page.locator('header')).toBeVisible()
-  
-  // 2. Check for Hero/Main banner (common regression point)
-  const hero = page.locator('section').filter({ has: page.locator('h1, h2') }).first()
-  await expect(hero).toBeVisible()
+  await dismissCookieBanner(page)
 
-  // 3. Check for Footer
-  await expect(page.locator('footer')).toBeVisible()
+  // Main application
+  await expect(page.locator('#app')).toBeVisible()
 
-  // 4. Check for Menu navigation
-  const menuButton = page.getByRole('button', { name: /Meniu|Planai|Telefonai/i }).first()
-  await expect(menuButton).toBeVisible()
+  // Main navigation
+  await expect(
+    page.getByRole('button', { name: 'Planai', exact: true })
+  ).toBeVisible()
+
+  // Search
+  await expect(
+    page.getByRole('button', { name: 'Atidaryti paiešką' })
+  ).toBeVisible()
+
+  // Cart
+  await expect(
+    page.getByRole('button', { name: 'Atidaryti krepšelį' })
+  ).toBeVisible()
+
+  // Main homepage content
+  await expect(
+    page.getByRole('heading', {
+      name: 'Mėnesio žvaigždės',
+      exact: true,
+    })
+  ).toBeVisible()
 })
