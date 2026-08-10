@@ -204,14 +204,22 @@ trigger_k8sconfigs:
 #
 run_e2e_tests:
   stage: test
-  image: mcr.microsoft.com/playwright:v1.49.1-noble
   before_script:
     - echo "Preparing Playwright environment..."
     # Create directories for Playwright reports and test results to avoid errors if they don't exist
     - mkdir -p playwright-report test-results
-    - npm ci
   script:
     - |
+      # Assign ENV_URL fallback if not set explicitly
+      if [ -z "$ENV_URL" ]; then
+        if [ "$ENV" = "uat-eshop" ]; then
+          ENV_URL="https://uat.tele2.lt"
+        else
+          ENV_URL="https://$ENV.tele2.lt"
+        fi
+      fi
+      export ENV_URL
+
       echo "========================================================="
       echo "              E2E TEST RUN INSTRUCTION & INFO            "
       echo "========================================================="
@@ -230,7 +238,7 @@ run_e2e_tests:
       echo ""
       echo "Available test files in 'e2e/' folder:"
       if [ -d "e2e" ]; then
-        find e2e -type f \( -name "*.spec.ts" -o -name "*.spec.js" -o -name "*.test.ts" -o -name "*.test.js" \)
+        find e2e -maxdepth 1 -type f \( -name "*.spec.ts" -o -name "*.spec.js" -o -name "*.test.ts" -o -name "*.test.js" \) -exec basename {} \;
       else
         echo " (e2e folder not found)"
       fi
@@ -245,10 +253,10 @@ run_e2e_tests:
         fi
       fi
       echo "========================================================="
-    - echo "Waiting for k8s to apply updates to environment $ENV_URL..."
-    - sleep 30
-    - export BASE_URL=$ENV_URL
-    - |
+
+      echo "Waiting for k8s to apply updates to environment $ENV_URL..."
+      export BASE_URL=$ENV_URL
+
       ARGS="--reporter=list"
 
       SELECTED_SUITE="$E2E_TEST_SUITE"
@@ -285,9 +293,17 @@ run_e2e_tests:
         fi
       fi
 
-      echo "Executing command: npx playwright test $ARGS"
+      echo "Executing Playwright via Podman container: npx playwright test $ARGS"
 
-      npx playwright test $ARGS
+      podman run --rm \
+        --net=host \
+        -v "$(pwd)":/work \
+        -w /work \
+        -e BASE_URL="$ENV_URL" \
+        -e CI=true \
+        mcr.microsoft.com/playwright:v1.56.1-noble \
+        sh -c "npm ci && npx playwright test $ARGS"
+
       TEST_EXIT_CODE=$?
 
       # If SAVE_ARTEFACTS is not 'yes', clean up the actual artifacts to save space
