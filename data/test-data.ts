@@ -1,1 +1,14 @@
-export const testData = {}
+export const testData = {
+  urls: {
+    home: '/privatiems',
+    private_store: '/privatiems',
+    business_store: '/verslui',
+    category: '/privatiems/mobilieji-telefonai',
+    plans: '/planai',
+  },
+  categorySlugs: {
+    mobilePhones: 'mobilieji-telefonai',
+    heaphones: 'ausines',
+    televisions: 'televizoriai',
+  } as const,
+};

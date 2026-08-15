@@ -2,7 +2,7 @@ import { Page } from '@playwright/test';
 import { CookieBanner } from './components/cookie-banner';
 
 export class BasePage {
-  private readonly page: Page;
+  protected page: Page;
   private readonly cookieBanner: CookieBanner;
 
   constructor(page: Page) {
