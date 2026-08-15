@@ -6,9 +6,16 @@ export const testData = {
     category: '/privatiems/mobilieji-telefonai',
     plans: '/planai',
   },
+
   categorySlugs: {
     mobilePhones: 'mobilieji-telefonai',
     heaphones: 'ausines',
     televisions: 'televizoriai',
+  } as const,
+
+  categoryNames: {
+    ['mobilieji-telefonai']: 'Mobilieji telefonai',
+    ['ausines']: 'Ausinės',
+    ['televizoriai']: 'Televizoriai',
   } as const,
 };

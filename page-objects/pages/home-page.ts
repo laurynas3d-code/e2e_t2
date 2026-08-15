@@ -1,7 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { BasePage } from '../base-page';
 import { HealthPage } from '../components/health-page';
-import { testData } from '../../data/test-data'
+import { testData } from '../../data/test-data';
 
 export class HomePage extends BasePage {
   private healthChecker: HealthPage;
