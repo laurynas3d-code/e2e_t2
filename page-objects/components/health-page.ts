@@ -6,10 +6,11 @@ export class HealthPage extends BasePage {
     super(page);
   }
 
-  async checkPageHealth(path: string) {
-    const response = await this.page.goto(path, {
-      waitUntil: 'domcontentloaded',
-    });
+  // if no path - check current page health, if path is provided - check health of that path
+  async checkPageHealth(path?: string) {
+    const response = path
+      ? await this.page.goto(path, { waitUntil: 'domcontentloaded' })
+      : await this.page.reload({ waitUntil: 'domcontentloaded' });
     expect(response?.status()).toBe(200);
   }
 }

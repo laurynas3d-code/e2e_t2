@@ -4,7 +4,7 @@ import { HealthPage } from '../components/health-page';
 import { testData } from '../../data/test-data';
 
 export class HomePage extends BasePage {
-  private healthChecker: HealthPage;
+  private readonly healthChecker: HealthPage;
 
   private readonly planaiButton: Locator;
   private readonly searchButton: Locator;
@@ -27,6 +27,7 @@ export class HomePage extends BasePage {
     })
   }
 
+  // TOOO remove this method and use checkPageHealth in spec.ts file
   async checkPageHealth() {
     await this.healthChecker.checkPageHealth(testData.urls.home);
   }

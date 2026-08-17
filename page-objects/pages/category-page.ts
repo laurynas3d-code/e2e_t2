@@ -2,6 +2,7 @@ import { expect, type Locator, type Page } from '@playwright/test';
 import { BasePage } from '../base-page';
 import { HealthPage } from '../components/health-page';
 import { testData } from '../../data/test-data';
+import { ProductPage } from './product-page';
 
 type CategorySlug = (typeof testData.categorySlugs)[keyof typeof testData.categorySlugs];
 
@@ -48,5 +49,11 @@ export class CategoryPage extends BasePage {
 
   async getProductCount() {
     return await this.categoryProduct.count();
+  }
+
+  async openFirstProduct(): Promise<ProductPage> {
+    await this.categoryProduct.first().click();
+    await this.page.waitForLoadState('domcontentloaded');
+    return new ProductPage(this.page);
   }
 }
