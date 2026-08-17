@@ -43,7 +43,8 @@ export class CategoryPage extends BasePage {
 
   async expectAtLeastOneProductVisible() {
     await expect(
-      this.categoryProduct,
+      this.categoryProduct
+        .first()
     ).toBeVisible();
   }
 
