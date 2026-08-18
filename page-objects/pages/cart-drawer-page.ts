@@ -1,17 +1,24 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { BasePage } from '../base-page';
+import { CartPage } from './cart-page';
 
 export class CartDrawerPage extends BasePage {
   private readonly cartDrawer: Locator;
   private readonly cartItem: Locator;
+  private readonly buyButton: Locator;
   private readonly emptyCartMessage: Locator;
 
   constructor(page: Page) {
     super(page);
-    this.cartDrawer = this.page.locator('[class*="CartDrawer_container"]');
+    this.cartDrawer = this.page.locator('[class*="Drawer_drawerContainer"]');
     // The cart item is identified by the "Remove Item" button, which is a child of the cart drawer
     this.cartItem = this.cartDrawer.getByRole('button', { name: /Pašalinti prekę/i });
+    this.buyButton = this.cartDrawer.getByRole('button', { name: 'Pirkti' });
     this.emptyCartMessage = this.cartDrawer.getByRole('heading', { name: /Krepšelis tuščias/i });
+  }
+
+  async expectDrawerVisible() {
+    await expect(this.cartDrawer).toBeVisible();
   }
 
   async expectAtLeastOneItemInCart() {
@@ -22,8 +29,9 @@ export class CartDrawerPage extends BasePage {
     return await this.cartItem.count();
   }
 
-  async goToCartPage() {
-    await this.cartDrawer.getByRole('link', { name: 'Peržiūrėti krepšelį' }).click();
+  async goToCartPage(): Promise<CartPage> {
+    await this.buyButton.click();
+    return new CartPage(this.page); // new cart page object
   }
 
   async removeItem() {

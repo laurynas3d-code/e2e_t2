@@ -22,6 +22,5 @@ test.describe('Product page', () => {
       await productPage.expectBreadcrumbsVisible();
       await productPage.expectPlanDropdownVisible();
       await productPage.expectAddToCartButtonVisible();
-    },
-  );
+    });
 });

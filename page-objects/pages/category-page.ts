@@ -38,7 +38,7 @@ export class CategoryPage extends BasePage {
   async expectCategoryHeadingVisible() {
     await expect(
       this.page.getByRole('heading', { level: 1, name: this.categoryHeading, exact: true }),
-    ).toBeVisible({ timeout: 15000 });
+    ).toBeVisible();
   }
 
   async expectAtLeastOneProductVisible() {

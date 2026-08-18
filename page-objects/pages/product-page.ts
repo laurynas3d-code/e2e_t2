@@ -16,16 +16,16 @@ export class ProductPage extends BasePage {
     this.planDropdown = this.page
       .locator('[class*="ProductOptionDropdownSelect_container"]')
       .getByRole('button', { expanded: false });
-    this.payNowOption = this.page.getByRole('radio', {
-      name: /Mokant iš karto/i,
-    });
+    this.payNowOption = this.page
+      .locator('label')
+      .filter({ hasText: 'Mokant iš karto' });
     this.addToCartButton = this.page
       .locator('[class*="ProductSummary_container"]')
       .getByRole('button', { name: /Pridėti į krepšelį/i });
   }
 
   async expectProductTitleVisible() {
-    await expect(this.productTitle).toBeVisible({ timeout: 15000 });
+    await expect(this.productTitle).toBeVisible();
     const text = await this.productTitle.textContent();
     expect(text?.trim().length).toBeGreaterThan(0);
   }
@@ -40,16 +40,20 @@ export class ProductPage extends BasePage {
 
   async expectAddToCartButtonVisible() {
     // Wait for the button to be visible, as it may take some time to load
-    await expect(this.addToCartButton).toBeVisible({ timeout: 15000 });
+    await expect(this.addToCartButton).toBeVisible();
   }
 
   async selectPayNow() {
     await this.payNowOption.check();
-    await expect(this.payNowOption).toBeChecked();
+    await expect(
+      this.page.getByRole('radio', { name: /Mokant iš karto/i }),
+    ).toBeChecked();
   }
 
   async addToCart(): Promise<CartDrawerPage> {
     await this.addToCartButton.click();
-    return new CartDrawerPage(this.page); // new cart page object
+    const cartDrawerPage = new CartDrawerPage(this.page);
+
+    return cartDrawerPage; // new cart page object
   }
 }

@@ -5,6 +5,7 @@ import { HomePage } from '../page-objects/pages/home-page';
 import { CategoryPage } from '../page-objects/pages/category-page';
 import { ProductPage } from '../page-objects/pages/product-page';
 import { CartDrawerPage } from '../page-objects/pages/cart-drawer-page';
+import { CartPage } from '../page-objects/pages/cart-page';
 
 // Type register
 type AppFixtures = {
@@ -14,6 +15,7 @@ type AppFixtures = {
   categoryPage: CategoryPage;
   productPage: ProductPage;
   cartDrawerPage: CartDrawerPage;
+  cartPage: CartPage;
 };
 
 // Basic test with the fixture
@@ -40,6 +42,10 @@ export const test = base.extend<AppFixtures>({
 
   cartDrawerPage: async ({ page }, use) => {
     await use(new CartDrawerPage(page)); // Create CartDrawerPage class object and give it to test
+  },
+
+  cartPage: async ({ page }, use) => {
+    await use(new CartPage(page)); // Create CartPage class object and give it to test
   }
 });
 

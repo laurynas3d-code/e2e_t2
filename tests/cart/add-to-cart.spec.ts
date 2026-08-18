@@ -14,7 +14,7 @@ import { test } from '../../fixtures/app.fixture';
  *    - click "Pridėti į krepšelį" button
  *    - Wait for add to complete (loader/button state)
  * 4. Cart drawer should auto-open
- * 5. Assert: drawer visible, breadcrumbs visible and at least one item in cart (not "Jūsų krepšelis tuščias")
+ * 5. Assert: drawer visible, cart has at least one item, remove item, assert cart empty, close drawer
  *
  * NOTES:
  * - UAT product availability may vary; consider using a fixture or known-in-stock SKU
