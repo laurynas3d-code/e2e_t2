@@ -1,6 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { BasePage } from '../base-page';
 import { CartDrawerPage } from './cart-drawer-page';
+import { testData } from '../../data/test-data';
 
 export class ProductPage extends BasePage {
   private readonly productTitle: Locator;
@@ -55,5 +56,9 @@ export class ProductPage extends BasePage {
     const cartDrawerPage = new CartDrawerPage(this.page);
 
     return cartDrawerPage; // new cart page object
+  }
+
+  async openProductDirectly() {
+    await this.page.goto(testData.product.url);
   }
 }

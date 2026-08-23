@@ -6,6 +6,8 @@ import { CategoryPage } from '../page-objects/pages/category-page';
 import { ProductPage } from '../page-objects/pages/product-page';
 import { CartDrawerPage } from '../page-objects/pages/cart-drawer-page';
 import { CartPage } from '../page-objects/pages/cart-page';
+import { CheckoutPage } from '../page-objects/pages/checkout-page';
+import { SwedbankLoginPage } from '../page-objects/pages/external/swedbank-login-page';
 
 // Type register
 type AppFixtures = {
@@ -16,6 +18,8 @@ type AppFixtures = {
   productPage: ProductPage;
   cartDrawerPage: CartDrawerPage;
   cartPage: CartPage;
+  checkoutPage: CheckoutPage;
+  swedbankLoginPage: SwedbankLoginPage;
 };
 
 // Basic test with the fixture
@@ -46,7 +50,15 @@ export const test = base.extend<AppFixtures>({
 
   cartPage: async ({ page }, use) => {
     await use(new CartPage(page)); // Create CartPage class object and give it to test
-  }
+  },
+
+  checkoutPage: async ({ page }, use) => {
+    await use(new CheckoutPage(page)); // Create CheckoutPage class object and give it to test
+  },
+
+  swedbankLoginPage: async ({ page }, use) => {
+    await use(new SwedbankLoginPage(page)); // Create SwedbankLoginPage class object and give it to test
+  },
 });
 
 export { expect } from '@playwright/test';
