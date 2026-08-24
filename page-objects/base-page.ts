@@ -13,4 +13,8 @@ export class BasePage {
   async dismissCookieBanner() {
     await this.cookieBanner.acceptIfVisible();
   }
+
+  async open(path: string = '/') {
+    await this.page.goto(path);
+  }
 }
