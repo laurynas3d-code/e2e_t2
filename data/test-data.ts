@@ -11,6 +11,7 @@ export const testData = {
     home: '/privatiems',
     private_store: '/privatiems',
     business_store: '/verslui',
+    notFound: '/privatiems/nonexistent,',
     category: '/privatiems/mobilieji-telefonai',
     plans: '/planai',
     checkout: '/checkout',

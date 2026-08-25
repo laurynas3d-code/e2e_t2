@@ -9,6 +9,7 @@ import { CartPage } from '../page-objects/pages/cart-page';
 import { CheckoutPage } from '../page-objects/pages/checkout-page';
 import { SwedbankLoginPage } from '../page-objects/pages/external/swedbank-login-page';
 import { Header } from '../page-objects/components/header';
+import { NotFoundPage } from '../page-objects/pages/not-found-page';
 
 // Type register
 type AppFixtures = {
@@ -22,6 +23,7 @@ type AppFixtures = {
   checkoutPage: CheckoutPage;
   swedbankLoginPage: SwedbankLoginPage;
   header: Header;
+  notFoundPage: NotFoundPage;
 };
 
 // Basic test with the fixture
@@ -63,6 +65,9 @@ export const test = base.extend<AppFixtures>({
   },
   header: async ({ page }, use) => {
     await use(new Header(page)); // Create Header class object and give it to test
+  },
+  notFoundPage: async ({ page }, use) => {
+    await use(new NotFoundPage(page)); // Create NotFoundPage class object and give it to test
   },
 });
 
