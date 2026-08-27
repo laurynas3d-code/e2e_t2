@@ -6,7 +6,7 @@ import { test } from '../../fixtures/app.fixture';
  */
 test.describe('Cart page', () => {
   test('@cart-page @smoke cart page should load and has at least one product',
-    async ({ page, categoryPage }) => {
+    async ({ categoryPage }) => {
       await categoryPage.open();
       await categoryPage.dismissCookieBanner();
 

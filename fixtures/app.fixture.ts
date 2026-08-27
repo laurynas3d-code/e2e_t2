@@ -10,6 +10,8 @@ import { CheckoutPage } from '../page-objects/pages/checkout-page';
 import { SwedbankLoginPage } from '../page-objects/pages/external/swedbank-login-page';
 import { Header } from '../page-objects/components/header';
 import { NotFoundPage } from '../page-objects/pages/not-found-page';
+import { SearchComponent } from '../page-objects/components/search';
+import { SearchResultsPage } from "../page-objects/pages/search-results-page";
 
 // Type register
 type AppFixtures = {
@@ -22,8 +24,10 @@ type AppFixtures = {
   cartPage: CartPage;
   checkoutPage: CheckoutPage;
   swedbankLoginPage: SwedbankLoginPage;
+  searchComponent: SearchComponent;
   header: Header;
   notFoundPage: NotFoundPage;
+  searchResultsPage: SearchResultsPage;
 };
 
 // Basic test with the fixture
@@ -68,6 +72,12 @@ export const test = base.extend<AppFixtures>({
   },
   notFoundPage: async ({ page }, use) => {
     await use(new NotFoundPage(page)); // Create NotFoundPage class object and give it to test
+  },
+  searchComponent: async ({ page }, use) => {
+    await use(new SearchComponent(page)); // Create SearchComponent class object and give it to test
+  },
+  searchResultsPage: async ({ page }, use) => {
+    await use(new SearchResultsPage(page)); // Create SearchResultsPage class object and give it to test
   },
 });
 

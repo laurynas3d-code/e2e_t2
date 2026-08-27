@@ -46,5 +46,10 @@ export const testData = {
     customerTelephone: '+37060000000',
     customerAddress: 'Klinikų g. 1',
     customerFlat: '99',
+  },
+
+  search: {
+    validTerm: 'samsung',
+    invalidTerm: 'abcdefg12345'
   }
 };

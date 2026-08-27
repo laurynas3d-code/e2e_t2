@@ -4,13 +4,13 @@ import { BasePage } from '../base-page';
 export class CartPage extends BasePage {
   private readonly cartItems: Locator;
   private readonly cartTable: Locator;
-  private readonly checkoutButton: Locator;
+  //private readonly checkoutButton: Locator;
 
   constructor(page: Page) {
     super(page);
     this.cartTable = this.page.locator('[class*="Cart_cartTable"]');
     this.cartItems = this.cartTable.locator('[class*="CartItem_cartItem"]');
-    this.checkoutButton = this.page.getByRole('button', { name: /Pirkti/i });
+    //this.checkoutButton = this.page.getByRole('button', { name: /Pirkti/i });
   }
 
   async expectAtLeastOneItemVisible() {
