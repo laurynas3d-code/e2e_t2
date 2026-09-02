@@ -1,9 +1,13 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { BasePage } from '../base-page';
+import { MiniCart } from './mini-cart';
+import { AuthDrawer } from './auth-drawer';
 export class Header extends BasePage {
   private readonly topMenuLinks: Locator[];
   private readonly mainMenuLinks: Locator[];
   private readonly phonesPageHeading: Locator;
+  private readonly miniCart: Locator;
+  private readonly accountMenu: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -24,7 +28,9 @@ export class Header extends BasePage {
       page.getByRole('button', { name: 'Paslaugos' }).first(),
       page.getByRole('button', { name: 'Akcijos' }).first()
     ];
-    this.phonesPageHeading = page.getByRole('heading', { name: 'Mobilieji telefonai' }).first();
+    this.phonesPageHeading = page.getByRole('heading', { name: 'Mobilieji telefonai' });
+    this.miniCart = page.getByRole('button', { name: 'Atidaryti krepšelį' }).filter({ visible: true });
+    this.accountMenu = page.getByRole('button', { name: 'Mano TELE2' }).filter({ visible: true });
   }
 
   async open() {
@@ -71,5 +77,18 @@ export class Header extends BasePage {
     // Check if the URL contains "mobilieji-telefonai" and the heading is visible
     await this.page.waitForURL(/.*\/mobilieji-telefonai.*/);
     await expect(this.phonesPageHeading).toBeVisible();
+  }
+
+  async clickMiniCart(): Promise<MiniCart> {
+    await expect(this.miniCart).toBeVisible();
+    await this.miniCart.click();
+    return new MiniCart(this.page);
+  }
+
+  // Check only guest account menu visibility. Not checking logged in user account menu button.
+  async clickAccountMenu(): Promise<AuthDrawer> {
+    await expect(this.accountMenu, 'Expected guest account button to be visible').toBeVisible();
+    await this.accountMenu.click();
+    return new AuthDrawer(this.page);
   }
 }

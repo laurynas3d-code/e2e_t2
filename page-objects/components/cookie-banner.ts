@@ -12,7 +12,7 @@ export class CookieBanner {
   async acceptIfVisible() {
     // Give the banner a very short opportunity to appear
     // If it is not present, return false
-    if (await this.acceptButton.isVisible({ timeout: 300 })) {
+    if (await this.acceptButton.isVisible({ timeout: 1000 })) {
       await this.acceptButton.click();
     }
   }

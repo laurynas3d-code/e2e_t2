@@ -15,7 +15,8 @@ test.describe('Checkout page and payment flow', () => {
     async ({ productPage, checkoutPage, swedbankLoginPage }) => {
       // Open product page directly and add it to the cart
       await productPage.openProductDirectly();
-      await productPage.addToCart();
+      const cartDrawer = await productPage.addToCart();
+      await cartDrawer.expectAtLeastOneItemInCart();
 
       // Open checkout page and verify that it works correctly.
       // Goes through all the steps of the checkout process,

@@ -12,6 +12,8 @@ import { Header } from '../page-objects/components/header';
 import { NotFoundPage } from '../page-objects/pages/not-found-page';
 import { SearchComponent } from '../page-objects/components/search';
 import { SearchResultsPage } from "../page-objects/pages/search-results-page";
+import { MiniCart } from '../page-objects/components/mini-cart';
+import { AuthDrawer } from '../page-objects/components/auth-drawer';
 
 // Type register
 type AppFixtures = {
@@ -28,9 +30,11 @@ type AppFixtures = {
   header: Header;
   notFoundPage: NotFoundPage;
   searchResultsPage: SearchResultsPage;
+  miniCart: MiniCart;
+  authDrawer: AuthDrawer;
 };
 
-// Basic test with the fixture
+// Basic test with the fixture. Create page objects and provide them to the test
 export const test = base.extend<AppFixtures>({
   basePage: async ({ page }, use) => {
     await use(new BasePage(page)); // Create BasePage class object and give it to test
@@ -78,6 +82,12 @@ export const test = base.extend<AppFixtures>({
   },
   searchResultsPage: async ({ page }, use) => {
     await use(new SearchResultsPage(page)); // Create SearchResultsPage class object and give it to test
+  },
+  miniCart: async ({ page }, use) => {
+    await use(new MiniCart(page)); // Create MiniCart class object and give it to test
+  },
+  authDrawer: async ({ page }, use) => {
+    await use(new AuthDrawer(page)); // Create AuthDrawer class object and give it to test
   },
 });
 

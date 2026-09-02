@@ -4,8 +4,6 @@ import { HealthPage } from '../components/health-page';
 import { testData } from '../../data/test-data';
 
 export class HomePage extends BasePage {
-  private readonly healthChecker: HealthPage;
-
   private readonly planaiButton: Locator;
   private readonly searchButton: Locator;
   private readonly searchInput: Locator;
@@ -15,7 +13,6 @@ export class HomePage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.healthChecker = new HealthPage(page);
 
     this.planaiButton = this.page.getByRole('button', { name: 'Planai', exact: true })
     this.searchButton = this.page.getByRole('button', { name: 'Atidaryti paiešką' })
@@ -25,11 +22,6 @@ export class HomePage extends BasePage {
       name: 'Mėnesio žvaigždės',
       exact: true,
     })
-  }
-
-  // TOOO remove this method and use checkPageHealth in spec.ts file
-  async checkPageHealth() {
-    await this.healthChecker.checkPageHealth(testData.urls.home);
   }
 
   async dismissCookieBanner() {
