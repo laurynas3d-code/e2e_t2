@@ -12,7 +12,7 @@ export const testData = {
     private_store: '/privatiems',
     business_store: '/verslui',
     notFound: '/privatiems/nonexistent,',
-    category: '/privatiems/mobilieji-telefonai',
+    help_page: '/pagalba',
     plans: '/planai',
     checkout: '/checkout',
     bank: {

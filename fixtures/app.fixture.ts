@@ -14,6 +14,7 @@ import { SearchComponent } from '../page-objects/components/search';
 import { SearchResultsPage } from "../page-objects/pages/search-results-page";
 import { MiniCart } from '../page-objects/components/mini-cart';
 import { AuthDrawer } from '../page-objects/components/auth-drawer';
+import { HelpPage } from '../page-objects/pages/help-page';
 
 // Type register
 type AppFixtures = {
@@ -32,62 +33,66 @@ type AppFixtures = {
   searchResultsPage: SearchResultsPage;
   miniCart: MiniCart;
   authDrawer: AuthDrawer;
+  helpPage: HelpPage;
 };
 
 // Basic test with the fixture. Create page objects and provide them to the test
 export const test = base.extend<AppFixtures>({
   basePage: async ({ page }, use) => {
-    await use(new BasePage(page)); // Create BasePage class object and give it to test
+    await use(new BasePage(page));
   },
 
   healthPage: async ({ page }, use) => {
-    await use(new HealthPage(page)); // Create HealthPage class object and give it to test
+    await use(new HealthPage(page));
   },
 
   homePage: async ({ page }, use) => {
-    await use(new HomePage(page)); // Create HomePage class object and give it to test
+    await use(new HomePage(page));
   },
 
   categoryPage: async ({ page }, use) => {
-    await use(new CategoryPage(page)); // Create CategoryPage class object and give it to test
+    await use(new CategoryPage(page));
   },
 
   productPage: async ({ page }, use) => {
-    await use(new ProductPage(page)); // Create ProductPage class object and give it to test
+    await use(new ProductPage(page));
   },
 
   cartDrawerPage: async ({ page }, use) => {
-    await use(new CartDrawerPage(page)); // Create CartDrawerPage class object and give it to test
+    await use(new CartDrawerPage(page));
   },
 
   cartPage: async ({ page }, use) => {
-    await use(new CartPage(page)); // Create CartPage class object and give it to test
+    await use(new CartPage(page));
   },
 
   checkoutPage: async ({ page }, use) => {
-    await use(new CheckoutPage(page)); // Create CheckoutPage class object and give it to test
+    await use(new CheckoutPage(page));
   },
 
   swedbankLoginPage: async ({ page }, use) => {
-    await use(new SwedbankLoginPage(page)); // Create SwedbankLoginPage class object and give it to test
+    await use(new SwedbankLoginPage(page));
   },
   header: async ({ page }, use) => {
-    await use(new Header(page)); // Create Header class object and give it to test
+    await use(new Header(page));
   },
   notFoundPage: async ({ page }, use) => {
-    await use(new NotFoundPage(page)); // Create NotFoundPage class object and give it to test
+    await use(new NotFoundPage(page));
   },
   searchComponent: async ({ page }, use) => {
-    await use(new SearchComponent(page)); // Create SearchComponent class object and give it to test
+    await use(new SearchComponent(page));
   },
   searchResultsPage: async ({ page }, use) => {
-    await use(new SearchResultsPage(page)); // Create SearchResultsPage class object and give it to test
+    await use(new SearchResultsPage(page));
   },
   miniCart: async ({ page }, use) => {
-    await use(new MiniCart(page)); // Create MiniCart class object and give it to test
+    await use(new MiniCart(page));
   },
   authDrawer: async ({ page }, use) => {
-    await use(new AuthDrawer(page)); // Create AuthDrawer class object and give it to test
+    await use(new AuthDrawer(page));
+  },
+  helpPage: async ({ page }, use) => {
+    await use(new HelpPage(page));
   },
 });
 
