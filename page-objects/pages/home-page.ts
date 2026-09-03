@@ -28,7 +28,7 @@ export class HomePage extends BasePage {
     await super.dismissCookieBanner();
   }
 
-  async expectHeaderNavigationVisible() {
+  async expectHeaderNavigationToBeVisible() {
     await expect(
       this.planaiButton,
     ).toBeVisible()
@@ -40,28 +40,28 @@ export class HomePage extends BasePage {
     await openSearchButton.click();
   }
 
-  async expectSearchInputVisible() {
+  async expectSearchInputToBeVisible() {
     await expect(this.searchInput).toBeVisible()
 
   }
 
-  async expectCartVisible() {
+  async expectCartToBeVisible() {
     await expect(
       this.cartButton,
     ).toBeVisible()
   }
 
-  async expectMainContentVisible() {
+  async expectMainContentToBeVisible() {
     await expect(
       this.monthStarsHeading,
     ).toBeVisible()
   }
 
-  async expectHomepageElementsVisible() {
-    await this.expectHeaderNavigationVisible();
+  async expectHomepageElementsToBeVisible() {
+    await this.expectHeaderNavigationToBeVisible();
     await this.openSearch();
-    await this.expectSearchInputVisible();
-    await this.expectCartVisible();
-    await this.expectMainContentVisible();
+    await this.expectSearchInputToBeVisible();
+    await this.expectCartToBeVisible();
+    await this.expectMainContentToBeVisible();
   }
 }

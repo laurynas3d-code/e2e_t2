@@ -18,9 +18,9 @@ test.describe('Product page', () => {
       await categoryPage.open();
       await categoryPage.dismissCookieBanner();
       const productPage = await categoryPage.openFirstProduct();
-      await productPage.expectProductTitleVisible();
-      await productPage.expectBreadcrumbsVisible();
-      await productPage.expectPlanDropdownVisible();
-      await productPage.expectAddToCartButtonVisible();
+      await productPage.expectProductTitleToBeVisible();
+      await productPage.expectBreadcrumbsToBeVisible();
+      await productPage.expectPlanDropdownToBeVisible();
+      await productPage.expectAddToCartButtonToBeVisible();
     });
 });

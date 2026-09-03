@@ -114,7 +114,7 @@ export class CheckoutPage extends BasePage {
   }
 
   // 2 STEPS
-  async expectCourierButtonVisible() {
+  async expectCourierButtonToBeVisible() {
     await expect(this.courierButton).toBeVisible();
   }
 
@@ -126,7 +126,7 @@ export class CheckoutPage extends BasePage {
     await this.courierButton.click();
   }
 
-  async expectCourierModalVisible() {
+  async expectCourierModalToBeVisible() {
     await expect(this.courierModalTitle).toBeVisible();
   }
   // TODO write courrier change address method
@@ -135,7 +135,7 @@ export class CheckoutPage extends BasePage {
     await this.courierModalButton.click();
   }
 
-  async expectPickupButtonVisible() {
+  async expectPickupButtonToBeVisible() {
     await expect(this.pickupButton).toBeVisible();
   }
 
@@ -147,7 +147,7 @@ export class CheckoutPage extends BasePage {
     await this.pickupButton.click();
   }
 
-  async expectPickupModalVisible() {
+  async expectPickupModalToBeVisible() {
     await expect(this.pickupModalTitle).toBeVisible();
   }
   // TODO write POS selection method
@@ -157,7 +157,7 @@ export class CheckoutPage extends BasePage {
   }
 
   // 3 STEPS
-  async expectSwedbankImageVisible() {
+  async expectSwedbankImageToBeVisible() {
     await expect(this.swedbankImage).toBeVisible();
   }
 
@@ -185,7 +185,7 @@ export class CheckoutPage extends BasePage {
     await this.page.waitForURL(this.successPageUrl);
   }
 
-  async expectCheckoutSuccessPageTitleVisible() {
+  async expectCheckoutSuccessPageTitleToBeVisible() {
     await expect(this.checkoutSuccessPageTitle).toBeVisible();
   }
 }

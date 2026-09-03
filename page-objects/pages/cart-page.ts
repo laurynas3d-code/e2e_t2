@@ -11,7 +11,7 @@ export class CartPage extends BasePage {
     this.cartItems = this.cartTable.locator('[class*="CartItem_cartItem"]');
   }
 
-  async expectAtLeastOneItemVisible() {
+  async expectAtLeastOneItemToBeVisible() {
     await expect(this.cartItems.first()).toBeVisible();
   }
 

@@ -32,20 +32,20 @@ export class CategoryPage extends BasePage {
   }
 
   async checkPageHealth() {
-    await this.healthChecker.checkPageHealth(testData.urls.category);
+    await this.healthChecker.checkPageHealth(`${testData.urls.private_store}/${this.categorySlug}`);
   }
 
   async dismissCookieBanner() {
     await super.dismissCookieBanner();
   }
 
-  async expectCategoryHeadingVisible() {
+  async expectCategoryHeadingToBeVisible() {
     await expect(
       this.page.getByRole('heading', { level: 1, name: this.categoryHeading, exact: true }),
     ).toBeVisible();
   }
 
-  async expectAtLeastOneProductVisible() {
+  async expectAtLeastOneProductToBeVisible() {
     await expect(
       this.categoryProduct
         .first()
@@ -66,7 +66,7 @@ export class CategoryPage extends BasePage {
     await this.categorySearchInput.fill(query);
   }
 
-  async expectSuggestionsToBeVisible() {
+  async expectSuggestionsHeaderToBeVisible() {
     await expect(this.suggestionsHeader).toBeVisible();
   }
 

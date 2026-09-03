@@ -16,7 +16,7 @@ test.describe('Checkout page and payment flow', () => {
       // Open product page directly and add it to the cart
       await productPage.openProductDirectly();
       const cartDrawer = await productPage.addToCart();
-      await cartDrawer.expectAtLeastOneItemInCart();
+      await cartDrawer.expectAtLeastOneItemInCartToBeVisible();
 
       // Open checkout page and verify that it works correctly.
       // Goes through all the steps of the checkout process,
@@ -29,7 +29,7 @@ test.describe('Checkout page and payment flow', () => {
       await checkoutPage.clickContinueButton();
 
       // 2 STEPS
-      await checkoutPage.expectCourierButtonVisible();
+      await checkoutPage.expectCourierButtonToBeVisible();
       await checkoutPage.expectCourierButtonChecked();
       // await checkoutPage.expectPickupButtonVisible();
       // await checkoutPage.clickPickupButton();
@@ -44,7 +44,7 @@ test.describe('Checkout page and payment flow', () => {
       await checkoutPage.clickContinueButton();
 
       // 3 STEPS
-      await checkoutPage.expectSwedbankImageVisible();
+      await checkoutPage.expectSwedbankImageToBeVisible();
       await checkoutPage.clickSwedbankImage();
       await checkoutPage.checkRulesCheckbox();
       await checkoutPage.checkPrivacyCheckbox();
@@ -79,7 +79,7 @@ test.describe('Checkout page and payment flow', () => {
 
       // CHECKOUT SUCCESS PAGE
       await checkoutPage.waitforCheckoutSuccessPage();
-      await checkoutPage.expectCheckoutSuccessPageTitleVisible();
+      await checkoutPage.expectCheckoutSuccessPageTitleToBeVisible();
     },
   );
 });

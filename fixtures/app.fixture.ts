@@ -15,6 +15,7 @@ import { SearchResultsPage } from "../page-objects/pages/search-results-page";
 import { MiniCart } from '../page-objects/components/mini-cart';
 import { AuthDrawer } from '../page-objects/components/auth-drawer';
 import { HelpPage } from '../page-objects/pages/help-page';
+import { VoicePlansPage } from '../page-objects/pages/voice-plans-page';
 
 // Type register
 type AppFixtures = {
@@ -33,6 +34,7 @@ type AppFixtures = {
   searchResultsPage: SearchResultsPage;
   miniCart: MiniCart;
   authDrawer: AuthDrawer;
+  voicePlansPage: VoicePlansPage;
   helpPage: HelpPage;
 };
 
@@ -93,6 +95,9 @@ export const test = base.extend<AppFixtures>({
   },
   helpPage: async ({ page }, use) => {
     await use(new HelpPage(page));
+  },
+  voicePlansPage: async ({ page }, use) => {
+    await use(new VoicePlansPage(page));
   },
 });
 

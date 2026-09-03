@@ -31,14 +31,14 @@ test.describe('Add to Cart', () => {
       const productPage = await categoryPage.openFirstProduct();
 
       await productPage.selectPayNow();
-      await productPage.expectAddToCartButtonVisible();
+      await productPage.expectAddToCartButtonToBeVisible();
 
       const cartDrawer = await productPage.addToCart();
 
-      await cartDrawer.expectAtLeastOneItemInCart();
+      await cartDrawer.expectAtLeastOneItemInCartToBeVisible();
       await cartDrawer.removeAllItems();
       await cartDrawer.expectCartEmpty();
       await cartDrawer.closeDrawer();
-      await cartDrawer.expectDrawerClosed();
+      await cartDrawer.expectDrawerToBeClosed();
     });
 });

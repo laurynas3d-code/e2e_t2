@@ -15,10 +15,10 @@ test.describe('Category page', () => {
       // const categoryPage = new CategoryPage(page, testData.categorySlugs.headphones);
       await categoryPage.open();
       await categoryPage.dismissCookieBanner();
-      await categoryPage.expectCategoryHeadingVisible();
-      await categoryPage.expectAtLeastOneProductVisible();
+      await categoryPage.expectCategoryHeadingToBeVisible();
+      await categoryPage.expectAtLeastOneProductToBeVisible();
       await categoryPage.typeInCategorySearch(testData.search.validTerm);
-      await categoryPage.expectSuggestionsToBeVisible();
+      await categoryPage.expectSuggestionsHeaderToBeVisible();
       await categoryPage.expectSuggestionsCountToBeGreaterThanZero();
     },
   );

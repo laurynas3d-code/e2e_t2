@@ -25,21 +25,21 @@ export class ProductPage extends BasePage {
       .getByRole('button', { name: /Pridėti į krepšelį/i });
   }
 
-  async expectProductTitleVisible() {
+  async expectProductTitleToBeVisible() {
     await expect(this.productTitle).toBeVisible();
     const text = await this.productTitle.textContent();
     expect(text?.trim().length).toBeGreaterThan(0);
   }
 
-  async expectBreadcrumbsVisible() {
+  async expectBreadcrumbsToBeVisible() {
     await expect(this.productBreadcrumbs.first()).toBeVisible();
   }
 
-  async expectPlanDropdownVisible() {
+  async expectPlanDropdownToBeVisible() {
     await expect(this.planDropdown).toBeVisible();
   }
 
-  async expectAddToCartButtonVisible() {
+  async expectAddToCartButtonToBeVisible() {
     // Wait for the button to be visible, as it may take some time to load
     await expect(this.addToCartButton).toBeVisible();
   }

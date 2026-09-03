@@ -17,11 +17,11 @@ export class CartDrawerPage extends BasePage {
     this.emptyCartMessage = this.cartDrawer.getByRole('heading', { name: /Krepšelis tuščias/i });
   }
 
-  async expectDrawerVisible() {
+  async expectDrawerToBeVisible() {
     await expect(this.cartDrawer).toBeVisible();
   }
 
-  async expectAtLeastOneItemInCart() {
+  async expectAtLeastOneItemInCartToBeVisible() {
     await expect(this.cartItem.first()).toBeVisible();
   }
 
@@ -55,7 +55,7 @@ export class CartDrawerPage extends BasePage {
     await this.cartDrawer.getByRole('button', { name: 'Uždaryti' }).click();
   }
 
-  async expectDrawerClosed() {
+  async expectDrawerToBeClosed() {
     await expect(this.cartDrawer).not.toBeVisible();
   }
 }

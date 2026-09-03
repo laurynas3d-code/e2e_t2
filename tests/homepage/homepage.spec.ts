@@ -12,6 +12,6 @@ test.describe('Homepage', () => {
     async ({ healthPage, homePage }) => {
       await healthPage.checkPageHealth(testData.urls.home);
       await homePage.dismissCookieBanner();
-      await homePage.expectHomepageElementsVisible();
+      await homePage.expectHomepageElementsToBeVisible();
     });
 });

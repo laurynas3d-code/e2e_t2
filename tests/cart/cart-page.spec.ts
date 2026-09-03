@@ -15,10 +15,10 @@ test.describe('Cart page', () => {
       await productPage.selectPayNow();
 
       const cartDrawerPage = await productPage.addToCart();
-      await cartDrawerPage.expectAtLeastOneItemInCart();
+      await cartDrawerPage.expectAtLeastOneItemInCartToBeVisible();
 
       const cartPage = await cartDrawerPage.goToCartPage();
-      await cartPage.expectAtLeastOneItemVisible();
+      await cartPage.expectAtLeastOneItemToBeVisible();
     }
   );
 });
