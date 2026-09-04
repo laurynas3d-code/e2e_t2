@@ -16,6 +16,9 @@ import { MiniCart } from '../page-objects/components/mini-cart';
 import { AuthDrawer } from '../page-objects/components/auth-drawer';
 import { HelpPage } from '../page-objects/pages/help-page';
 import { VoicePlansPage } from '../page-objects/pages/voice-plans-page';
+import { CompareDrawer } from '../page-objects/components/compare-drawer';
+import { ComparePage } from '../page-objects/pages/compare-page';
+import { FabMenu } from '../page-objects/components/fab-menu';
 
 // Type register
 type AppFixtures = {
@@ -36,6 +39,9 @@ type AppFixtures = {
   authDrawer: AuthDrawer;
   voicePlansPage: VoicePlansPage;
   helpPage: HelpPage;
+  compareDrawer: CompareDrawer;
+  comparePage: ComparePage;
+  fabMenu: FabMenu;
 };
 
 // Basic test with the fixture. Create page objects and provide them to the test
@@ -98,6 +104,15 @@ export const test = base.extend<AppFixtures>({
   },
   voicePlansPage: async ({ page }, use) => {
     await use(new VoicePlansPage(page));
+  },
+  compareDrawer: async ({ page }, use) => {
+    await use(new CompareDrawer(page));
+  },
+  comparePage: async ({ page }, use) => {
+    await use(new ComparePage(page));
+  },
+  fabMenu: async ({ page }, use) => {
+    await use(new FabMenu(page));
   },
 });
 

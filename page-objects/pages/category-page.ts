@@ -5,8 +5,6 @@ import { testData } from '../../data/test-data';
 import { ProductPage } from './product-page';
 
 type CategorySlug = (typeof testData.categorySlugs)[keyof typeof testData.categorySlugs];
-
-
 export class CategoryPage extends BasePage {
   private healthChecker: HealthPage;
   private readonly categorySlug: CategorySlug;
@@ -15,6 +13,7 @@ export class CategoryPage extends BasePage {
   private readonly categorySearchInput: Locator;
   private readonly suggestionsHeader: Locator;
   private readonly suggestionCards: Locator;
+  private readonly compareButton: Locator;
 
   constructor(page: Page, categorySlug: CategorySlug = testData.categorySlugs.mobilePhones) {
     super(page);
@@ -25,6 +24,7 @@ export class CategoryPage extends BasePage {
     this.categorySearchInput = this.page.locator('input.search-input').getByPlaceholder('Paieška');
     this.suggestionsHeader = this.page.getByRole('heading', { name: 'Siūlomos paieškos', level: 4 });
     this.suggestionCards = this.page.locator('a[class*="CategorySearchSuggestion_link"]');
+    this.compareButton = this.page.getByRole('button', { name: 'Palyginti' });
   }
 
   async open() {
@@ -73,5 +73,12 @@ export class CategoryPage extends BasePage {
   async expectSuggestionsCountToBeGreaterThanZero() {
     const cardsCount = await this.suggestionCards.count();
     expect(cardsCount).toBeGreaterThan(0);
+
+  }
+  // Method for adding a products to the comparison list by its index
+  async clickAddToCompare(productsToCompareCount: number) {
+    for (let i = 0; i < productsToCompareCount; i++) {
+      await this.compareButton.nth(i).click();
+    }
   }
 }
